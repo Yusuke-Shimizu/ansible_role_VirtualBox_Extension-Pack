@@ -1,0 +1,47 @@
+---
+# VBoxManage list extpacks
+- name: get list
+  shell: VBoxManage list extpacks
+  register: extpack_list
+- debug: var=extpack_list.stdout
+
+
+
+# LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT) && wget "http://download.virtualbox.org/virtualbox/${LatestVirtualBoxVersion}/Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack"
+- name: get version
+  shell: wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT
+  register: LatestVirtualBoxVersion
+  # get_url: 
+  #   url: "http://download.virtualbox.org/virtualbox/LATEST.TXT"
+  #   dest: "~/some.tar.gz"
+  # register: downloaded_tarball
+
+- debug: var=LatestVirtualBoxVersion.stdout
+
+# - name: get version
+#   shell: wget http://download.virtualbox.org/virtualbox/{{LatestVirtualBoxVersion.stdout}}/Oracle_VM_VirtualBox_Extension_Pack-{{LatestVirtualBoxVersion.stdout}}.vbox-extpack
+#   register: result
+# - debug: var=result.stdout
+
+- name: Download Extension Pack
+  get_url:
+    url: http://download.virtualbox.org/virtualbox/{{LatestVirtualBoxVersion.stdout}}/Oracle_VM_VirtualBox_Extension_Pack-{{LatestVirtualBoxVersion.stdout}}.vbox-extpack
+    dest: /tmp/Oracle_VM_VirtualBox_Extension_Pack.vbox-extpack
+
+
+
+# sudo VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
+- name: install
+  shell: yes 'y' | VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack.vbox-extpack
+  args:
+    chdir: /tmp/
+  become: true
+  register: extpack_list
+
+# VBoxManage list extpacks
+- name: get list
+  shell: VBoxManage list extpacks
+  register: extpack_list
+- debug: var=extpack_list.stdout
+
+# sudo VBoxManage extpack uninstall "Oracle VM VirtualBox Extension Pack"

@@ -1,0 +1,5 @@
+---
+# tasks file for ansible_role_VirtualBox_Extension-Pack
+# https://unix.stackexchange.com/questions/289685/how-to-install-virtualbox-extension-pack-to-virtualbox-latest-version-on-linux
+
+- import_tasks: "install.yml"
